@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"reflect"
+	"sort"
 	"strings"
 
 	"gorm.io/gen/field"
@@ -97,6 +98,26 @@ func (c *Column) buildGormTag() field.GormTag {
 	} else if n, ok := c.Nullable(); ok && !n {
 		tag.Set(field.TagKeyGormNotNull, "")
 	}
+
+	sort.SliceStable(c.Indexes, func(i, j int) bool {
+		idxI := c.Indexes[i]
+		idxJ := c.Indexes[j]
+		if idxI == nil && idxJ == nil {
+			return false
+		}
+		if idxI == nil {
+			return false
+		}
+		if idxJ == nil {
+			return true
+		}
+		nameI := idxI.Name()
+		nameJ := idxJ.Name()
+		if nameI == nameJ {
+			return idxI.Priority < idxJ.Priority
+		}
+		return nameI < nameJ
+	})
 
 	for _, idx := range c.Indexes {
 		if idx == nil {
