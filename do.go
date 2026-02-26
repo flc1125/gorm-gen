@@ -794,7 +794,9 @@ func (d *DO) assignSetWithoutAutoUpdate(exprs []field.AssignExpr) (set clause.Se
 func (d *DO) Delete(models ...interface{}) (info ResultInfo, err error) {
 	var result *gorm.DB
 	tx := d.prepareTx()
-	if len(models) == 0 || reflect.ValueOf(models[0]).Len() == 0 {
+	if d.backfillData != nil && len(models) == 0 {
+		result = tx.Delete(d.backfillData)
+	} else if len(models) == 0 || reflect.ValueOf(models[0]).Len() == 0 {
 		result = tx.Delete(reflect.New(d.modelType).Interface())
 	} else {
 		targets := reflect.MakeSlice(reflect.SliceOf(reflect.PtrTo(d.modelType)), 0, len(models))
