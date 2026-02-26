@@ -22,18 +22,18 @@ type testColumnType struct {
 	comment       string
 }
 
-func (t testColumnType) Name() string                         { return t.name }
-func (t testColumnType) DatabaseTypeName() string             { return t.databaseType }
-func (t testColumnType) ColumnType() (string, bool)           { return t.columnType, t.columnType != "" }
-func (t testColumnType) PrimaryKey() (bool, bool)             { return t.primaryKey, true }
-func (t testColumnType) AutoIncrement() (bool, bool)          { return t.autoIncrement, true }
-func (t testColumnType) Nullable() (bool, bool)               { return t.nullable, true }
-func (t testColumnType) Unique() (bool, bool)                 { return t.unique, true }
-func (t testColumnType) DefaultValue() (string, bool)         { return t.defaultValue, t.defaultValue != "" }
-func (t testColumnType) Comment() (string, bool)              { return t.comment, t.comment != "" }
-func (t testColumnType) ScanType() reflect.Type               { return nil }
-func (t testColumnType) Length() (int64, bool)                { return 0, false }
-func (t testColumnType) DecimalSize() (int64, int64, bool)     { return 0, 0, false }
+func (t testColumnType) Name() string                      { return t.name }
+func (t testColumnType) DatabaseTypeName() string          { return t.databaseType }
+func (t testColumnType) ColumnType() (string, bool)        { return t.columnType, t.columnType != "" }
+func (t testColumnType) PrimaryKey() (bool, bool)          { return t.primaryKey, true }
+func (t testColumnType) AutoIncrement() (bool, bool)       { return t.autoIncrement, true }
+func (t testColumnType) Nullable() (bool, bool)            { return t.nullable, true }
+func (t testColumnType) Unique() (bool, bool)              { return t.unique, true }
+func (t testColumnType) DefaultValue() (string, bool)      { return t.defaultValue, t.defaultValue != "" }
+func (t testColumnType) Comment() (string, bool)           { return t.comment, t.comment != "" }
+func (t testColumnType) ScanType() reflect.Type            { return nil }
+func (t testColumnType) Length() (int64, bool)             { return 0, false }
+func (t testColumnType) DecimalSize() (int64, int64, bool) { return 0, 0, false }
 
 var _ gorm.ColumnType = testColumnType{}
 
@@ -64,7 +64,7 @@ func TestBuildGormTagIndexOrderDeterministic(t *testing.T) {
 		},
 	}
 
-	tag := col.buildGormTag()
+	tag := col.buildGormTag(false)
 	got := tag[field.TagKeyGormIndex]
 	want := []string{
 		"idx_payout_tenant_id,priority:1",
@@ -74,4 +74,3 @@ func TestBuildGormTagIndexOrderDeterministic(t *testing.T) {
 		t.Fatalf("unexpected index order: got=%v want=%v", got, want)
 	}
 }
-

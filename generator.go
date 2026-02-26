@@ -189,11 +189,12 @@ func (g *Generator) genModelConfig(tableName string, modelName string, modelOpts
 		FieldConfig: model.FieldConfig{
 			DataTypeMap: g.dataTypeMap,
 
-			FieldSignable:     g.FieldSignable,
-			FieldNullable:     g.FieldNullable,
-			FieldCoverable:    g.FieldCoverable,
-			FieldWithIndexTag: g.FieldWithIndexTag,
-			FieldWithTypeTag:  g.FieldWithTypeTag,
+			FieldSignable:       g.FieldSignable,
+			FieldNullable:       g.FieldNullable,
+			FieldCoverable:      g.FieldCoverable,
+			FieldWithIndexTag:   g.FieldWithIndexTag,
+			FieldWithTypeTag:    g.FieldWithTypeTag,
+			FieldWithDefaultTag: g.FieldWithDefaultTag,
 
 			FieldJSONTagNS: g.fieldJSONTagNS,
 		},
