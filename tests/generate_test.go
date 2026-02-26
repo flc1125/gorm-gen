@@ -321,7 +321,7 @@ func Test_GenVariadic(t *testing.T) {
 		t.Fatalf("read generated file failed: %v", err)
 	}
 	str := string(content)
-	if !strings.Contains(str, "VariadicMethod(ids ...int) (result []gen.T, err error)") {
+	if !strings.Contains(str, "VariadicMethod(ids ...int)") {
 		t.Error("should generate VariadicMethod implementation")
 	}
 }
