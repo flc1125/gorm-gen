@@ -11,6 +11,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"gorm.io/gorm/logger"
+	"gorm.io/gorm/utils/tests"
 	"gorm.io/hints"
 
 	"gorm.io/gen/field"
@@ -464,5 +465,39 @@ func TestUpdateColumnSimpleNoUpdatedAt(t *testing.T) {
 	}
 	if strings.Contains(strings.ToLower(l.lastSQL), "updated_at") {
 		t.Fatalf("unexpected updated_at in sql: %s", l.lastSQL)
+	}
+}
+
+type postgresDialector struct{ tests.DummyDialector }
+
+func (postgresDialector) Name() string { return "postgres" }
+
+type deleteReturningModel struct {
+	ID int64
+}
+
+func (deleteReturningModel) TableName() string { return "records" }
+
+func TestDeleteReturningBackfillDest(t *testing.T) {
+	base, err := gorm.Open(postgresDialector{}, &gorm.Config{})
+	if err != nil {
+		t.Fatalf("open db: %v", err)
+	}
+	var dest interface{}
+	base.Callback().Delete().Before("gorm:delete").Register("test:dest", func(db *gorm.DB) {
+		dest = db.Statement.Dest
+	})
+	dry := base.Session(&gorm.Session{DryRun: true, NewDB: true})
+	var d DO
+	d.UseDB(dry)
+	d.UseModel(deleteReturningModel{})
+
+	var result []*deleteReturningModel
+	_, err = d.Returning(&result).Where(field.NewInt("", "id").Eq(1)).Delete()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if dest != &result {
+		t.Fatalf("unexpected delete dest: %v", dest)
 	}
 }
