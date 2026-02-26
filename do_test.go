@@ -3,6 +3,7 @@ package gen
 import (
 	"context"
 	"reflect"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -472,6 +473,59 @@ type postgresDialector struct{ tests.DummyDialector }
 
 func (postgresDialector) Name() string { return "postgres" }
 
+func (postgresDialector) BindVarTo(writer clause.Writer, stmt *gorm.Statement, v interface{}) {
+	writer.WriteByte('$')
+	writer.WriteString(strconv.Itoa(len(stmt.Vars)))
+}
+
+func (postgresDialector) QuoteTo(writer clause.Writer, str string) {
+	var (
+		underQuoted, selfQuoted bool
+		continuousBacktick      int8
+		shiftDelimiter          int8
+	)
+
+	for _, v := range []byte(str) {
+		switch v {
+		case '"':
+			continuousBacktick++
+			if continuousBacktick == 2 {
+				writer.WriteString(`""`)
+				continuousBacktick = 0
+			}
+		case '.':
+			if continuousBacktick > 0 || !selfQuoted {
+				shiftDelimiter = 0
+				underQuoted = false
+				continuousBacktick = 0
+				writer.WriteByte('"')
+			}
+			writer.WriteByte(v)
+			continue
+		default:
+			if shiftDelimiter-continuousBacktick <= 0 && !underQuoted {
+				writer.WriteByte('"')
+				underQuoted = true
+				if selfQuoted = continuousBacktick > 0; selfQuoted {
+					continuousBacktick -= 1
+				}
+			}
+
+			for ; continuousBacktick > 0; continuousBacktick -= 1 {
+				writer.WriteString(`""`)
+			}
+
+			writer.WriteByte(v)
+		}
+		shiftDelimiter++
+	}
+
+	if continuousBacktick > 0 && !selfQuoted {
+		writer.WriteString(`""`)
+	}
+	writer.WriteByte('"')
+}
+
 type deleteReturningModel struct {
 	ID int64
 }
@@ -499,5 +553,23 @@ func TestDeleteReturningBackfillDest(t *testing.T) {
 	}
 	if dest != &result {
 		t.Fatalf("unexpected delete dest: %v", dest)
+	}
+}
+
+func TestPostgresSelectVarBind(t *testing.T) {
+	base, err := gorm.Open(postgresDialector{}, &gorm.Config{})
+	if err != nil {
+		t.Fatalf("open db: %v", err)
+	}
+	l := &captureLogger{}
+	dry := base.Session(&gorm.Session{DryRun: true, NewDB: true, Logger: l})
+	var d DO
+	d.UseDB(dry)
+	d.UseTable("user")
+
+	_ = d.Select(field.NewInt("", "balance").Sub(1), field.NewInt("", "score").Sub(2)).Row()
+	expect := `SELECT "balance"-$1,"score"-$2 FROM "user"`
+	if l.lastSQL != expect {
+		t.Fatalf("expect %s, got %s", expect, l.lastSQL)
 	}
 }
