@@ -34,19 +34,20 @@ const (
 
 // CmdParams is command line parameters
 type CmdParams struct {
-	DSN               string   `yaml:"dsn"`               // consult[https://gorm.io/docs/connecting_to_the_database.html]"
-	DB                string   `yaml:"db"`                // input mysql or postgres or sqlite or sqlserver. consult[https://gorm.io/docs/connecting_to_the_database.html]
-	Tables            []string `yaml:"tables"`            // enter the required data table or leave it blank
-	OnlyModel         bool     `yaml:"onlyModel"`         // only generate model
-	OutPath           string   `yaml:"outPath"`           // specify a directory for output
-	OutFile           string   `yaml:"outFile"`           // query code file name, default: gen.go
-	WithUnitTest      bool     `yaml:"withUnitTest"`      // generate unit test for query code
-	ModelPkgName      string   `yaml:"modelPkgName"`      // generated model code's package name
-	FieldNullable     bool     `yaml:"fieldNullable"`     // generate with pointer when field is nullable
-	FieldCoverable    bool     `yaml:"fieldCoverable"`    // generate with pointer when field has default value
-	FieldWithIndexTag bool     `yaml:"fieldWithIndexTag"` // generate field with gorm index tag
-	FieldWithTypeTag  bool     `yaml:"fieldWithTypeTag"`  // generate field with gorm column type tag
-	FieldSignable     bool     `yaml:"fieldSignable"`     // detect integer field's unsigned type, adjust generated data type
+	DSN                 string   `yaml:"dsn"`                 // consult[https://gorm.io/docs/connecting_to_the_database.html]"
+	DB                  string   `yaml:"db"`                  // input mysql or postgres or sqlite or sqlserver. consult[https://gorm.io/docs/connecting_to_the_database.html]
+	Tables              []string `yaml:"tables"`              // enter the required data table or leave it blank
+	OnlyModel           bool     `yaml:"onlyModel"`           // only generate model
+	OutPath             string   `yaml:"outPath"`             // specify a directory for output
+	OutFile             string   `yaml:"outFile"`             // query code file name, default: gen.go
+	WithUnitTest        bool     `yaml:"withUnitTest"`        // generate unit test for query code
+	ModelPkgName        string   `yaml:"modelPkgName"`        // generated model code's package name
+	FieldNullable       bool     `yaml:"fieldNullable"`       // generate with pointer when field is nullable
+	FieldCoverable      bool     `yaml:"fieldCoverable"`      // generate with pointer when field has default value
+	FieldWithIndexTag   bool     `yaml:"fieldWithIndexTag"`   // generate field with gorm index tag
+	FieldWithTypeTag    bool     `yaml:"fieldWithTypeTag"`    // generate field with gorm column type tag
+	FieldWithDefaultTag bool     `yaml:"fieldWithDefaultTag"` // generate field with gorm default tag
+	FieldSignable       bool     `yaml:"fieldSignable"`       // detect integer field's unsigned type, adjust generated data type
 }
 
 func (c *CmdParams) revise() *CmdParams {
@@ -153,6 +154,7 @@ func argParse() *CmdParams {
 	fieldCoverable := flag.Bool("fieldCoverable", false, "generate with pointer when field has default value")
 	fieldWithIndexTag := flag.Bool("fieldWithIndexTag", false, "generate field with gorm index tag")
 	fieldWithTypeTag := flag.Bool("fieldWithTypeTag", false, "generate field with gorm column type tag")
+	fieldWithDefaultTag := flag.Bool("fieldWithDefaultTag", false, "generate field with gorm default tag")
 	fieldSignable := flag.Bool("fieldSignable", false, "detect integer field's unsigned type, adjust generated data type")
 	flag.Parse()
 
@@ -198,6 +200,9 @@ func argParse() *CmdParams {
 	if *fieldWithTypeTag {
 		cmdParse.FieldWithTypeTag = *fieldWithTypeTag
 	}
+	if *fieldWithDefaultTag {
+		cmdParse.FieldWithDefaultTag = *fieldWithDefaultTag
+	}
 	if *fieldSignable {
 		cmdParse.FieldSignable = *fieldSignable
 	}
@@ -217,15 +222,16 @@ func main() {
 	}
 
 	g := gen.NewGenerator(gen.Config{
-		OutPath:           config.OutPath,
-		OutFile:           config.OutFile,
-		ModelPkgPath:      config.ModelPkgName,
-		WithUnitTest:      config.WithUnitTest,
-		FieldNullable:     config.FieldNullable,
-		FieldCoverable:    config.FieldCoverable,
-		FieldWithIndexTag: config.FieldWithIndexTag,
-		FieldWithTypeTag:  config.FieldWithTypeTag,
-		FieldSignable:     config.FieldSignable,
+		OutPath:             config.OutPath,
+		OutFile:             config.OutFile,
+		ModelPkgPath:        config.ModelPkgName,
+		WithUnitTest:        config.WithUnitTest,
+		FieldNullable:       config.FieldNullable,
+		FieldCoverable:      config.FieldCoverable,
+		FieldWithIndexTag:   config.FieldWithIndexTag,
+		FieldWithTypeTag:    config.FieldWithTypeTag,
+		FieldWithDefaultTag: config.FieldWithDefaultTag,
+		FieldSignable:       config.FieldSignable,
 	})
 
 	g.UseDB(db)

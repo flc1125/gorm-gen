@@ -28,5 +28,7 @@ database:
   fieldWithIndexTag : false
   # generate field with gorm column type tag
   fieldWithTypeTag  : false
+  # generate field with gorm default tag
+  fieldWithDefaultTag : false
   # detect integer field's unsigned type, adjust generated data type
   fieldSignable  : false
