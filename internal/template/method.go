@@ -314,7 +314,6 @@ func Test_{{.QueryStructName}}Query(t *testing.T) {
 		t.Error("create item in table <{{.TableName}}> fail:", err)
 	}
 {{- end }}
-
 	_, err = _do.Select({{.QueryStructName}}.ALL).Take()
 	if err != nil {
 		t.Error("Take() on table <{{.TableName}}> fail:", err)
