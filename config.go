@@ -48,6 +48,8 @@ type Config struct {
 
 	Mode GenerateMode // generate mode
 
+	UnitTestTemplate string
+
 	queryPkgName   string // generated query code's package name
 	modelPkgPath   string // model pkg path in target project
 	dbNameOpts     []model.SchemaNameOpt

@@ -43,6 +43,8 @@
         only generate models (without query file)
   -withUnitTest
         generate unit test for query code
+  -unitTestTemplate string
+        custom unit test template file path for query code
   -fieldSignable
         detect integer field's unsigned type, adjust generated data type
 
@@ -125,6 +127,10 @@ eg :
 值为 : False / True
 
 生成单元测试。
+
+#### unitTestTemplate
+
+自定义 query 单测模板文件路径
 
 #### fieldSignable
 

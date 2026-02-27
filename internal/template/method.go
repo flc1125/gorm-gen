@@ -309,7 +309,7 @@ func Test_{{.QueryStructName}}Query(t *testing.T) {
 	}
 
 {{- if not .HasUniqueIndex }}
-	err = _do.CreateInBatches([]*{{.StructInfo.Package}}.{{.ModelStructName}}{&{{.StructInfo.Package}}.{{.ModelStructName}}{}, &{{.StructInfo.Package}}.{{.ModelStructName}}{}}, 10)
+	err = _do.CreateInBatches([]*{{.StructInfo.Package}}.{{.ModelStructName}}{ {}, {} }, 10)
 	if err != nil {
 		t.Error("create item in table <{{.TableName}}> fail:", err)
 	}
