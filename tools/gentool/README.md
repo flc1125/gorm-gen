@@ -27,6 +27,8 @@ Install GEN as a binary tool
         generate field with gorm index tag
   -fieldWithTypeTag
         generate field with gorm column type tag
+  -fieldWithDefaultTag
+        generate field with gorm default tag
   -modelPkgName string
         generated model code's package name
   -outFile string
@@ -79,6 +81,10 @@ generate field with gorm index tag
 #### fieldWithTypeTag
 
 generate field with gorm column type tag
+
+#### fieldWithDefaultTag
+
+generate field with gorm default tag
 
 #### modelPkgName
 

@@ -29,6 +29,8 @@
         generate field with gorm index tag
   -fieldWithTypeTag
         generate field with gorm column type tag
+  -fieldWithDefaultTag
+        generate field with gorm default tag
   -modelPkgName string
         generated model code's package name
   -outFile string
@@ -81,6 +83,10 @@ default ""
 #### fieldWithTypeTag
 
 使用gorm列类型标记生成字段
+
+#### fieldWithDefaultTag
+
+使用gorm默认值标记生成字段
 
 #### modelPkgName
 
