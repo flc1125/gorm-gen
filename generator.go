@@ -475,7 +475,15 @@ func (g *Generator) generateQueryUnitTestFile(data *genInfo) (err error) {
 		return err
 	}
 
-	err = render(tmpl.CRUDMethodTest, &buf, data.QueryStructMeta)
+	crudTmpl := tmpl.CRUDMethodTest
+	if g.UnitTestTemplate != "" {
+		content, readErr := os.ReadFile(g.UnitTestTemplate)
+		if readErr != nil {
+			return readErr
+		}
+		crudTmpl = string(content)
+	}
+	err = render(crudTmpl, &buf, data.QueryStructMeta)
 	if err != nil {
 		return err
 	}
