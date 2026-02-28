@@ -36,6 +36,8 @@ type Expr interface {
 	MulCol(col Expr) Expr
 	DivCol(col Expr) Expr
 	ConcatCol(cols ...Expr) Expr
+	Desc() Expr
+	Asc() Expr
 
 	// implement Condition
 	BeCond() interface{}
